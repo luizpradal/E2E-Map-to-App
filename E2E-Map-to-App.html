@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NR Studios — Affiliate Pipeline</title>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #ffffff;
+      --card:       #ffffff;
+      --surface:    #f4f1ed;
+      --ink:        #000000;
+      --muted:      #555555;
+      --border:     rgba(0,0,0,0.11);
+      --teal:       #2d6e72;
+      --teal-deep:  #1b4a4d;
+      --teal-light: #e1f5ee;
+      --teal-text:  #ffffff;
+      --terra:      #c4593a;
+      --terra-light:#fdf0eb;
+      --terra-text: #ffffff;
+      --sand:       #d4c4ae;
+      --stone:      #9a9590;
+      --charcoal:   #1e1e1c;
+      --cream:      #f7f3ee;
+      --btn-bg:     #1b4a4d;
+      --btn-text:   #f0ebe3;
+      --btn-hover:  #2d6e72;
+      --success:    #2d6e72;
+      --warn:       #c4593a;
+      --neutral:    #9a9590;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:         #141412;
+        --card:       #1e1e1c;
+        --surface:    #1a1a18;
+        --ink:        #f0ebe3;
+        --muted:      #9a9590;
+        --border:     rgba(255,255,255,0.09);
+        --teal:       #1b4a4d;
+        --teal-deep:  #0f2e30;
+        --teal-light: #0d2e2a;
+        --teal-text:  #9FE1CB;
+        --terra:      #7a2f1c;
+        --terra-light:#2a1209;
+        --terra-text: #f0b49a;
+        --sand:       #3a3228;
+        --stone:      #3d3a36;
+        --charcoal:   #2d2d2a;
+        --cream:      #252522;
+        --btn-bg:     #1b4a4d;
+        --btn-text:   #9FE1CB;
+        --btn-hover:  #2d6e72;
+      }
+    }
+
+    body { font-family: 'Titillium Web', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--card); border-bottom: 1px solid var(--border);
+      padding: 0 2rem; height: 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .topbar-brand { font-size: 11px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink); }
+    .topbar-brand span { color: var(--terra); }
+    .topbar-sub { font-size: 9px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+
+    /* ── LAYOUT ── */
+    .shell { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 52px); }
+
+    /* ── SIDEBAR ── */
+    .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 1.5rem 0; }
+    .sidebar-label { font-size: 8px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); padding: 0 1.25rem; margin-bottom: 8px; }
+
+    .prospect-list { list-style: none; }
+    .prospect-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 1.25rem; cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .prospect-item:hover { background: var(--border); }
+    .prospect-item.active { background: var(--card); border-left-color: var(--teal); }
+    .prospect-item.active .p-name { color: var(--teal-deep); font-weight: 700; }
+
+    .p-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+      background: var(--teal); color: var(--teal-text);
+    }
+    .p-avatar.stage-2 { background: var(--terra); color: var(--terra-text); }
+    .p-avatar.stage-3 { background: var(--charcoal); color: var(--cream); }
+    .p-meta { flex: 1; min-width: 0; }
+    .p-name { font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .p-stage-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+    .add-prospect-btn {
+      margin: 12px 1.25rem 0;
+      width: calc(100% - 2.5rem);
+      background: var(--btn-bg); color: var(--btn-text);
+      border: none; border-radius: 2px; padding: 9px;
+      font-family: 'Titillium Web', sans-serif; font-size: 10px;
+      font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .add-prospect-btn:hover { background: var(--btn-hover); }
+
+    /* ── MAIN ── */
+    .main { padding: 2rem; overflow-y: auto; }
+    .main-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 400px; color: var(--muted); text-align: center; }
+    .main-empty .icon { font-size: 36px; margin-bottom: 12px; opacity: 0.4; }
+    .main-empty p { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* ── PROSPECT HEADER ── */
+    .prospect-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 12px; }
+    .prospect-header h2 { font-size: 22px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); }
+    .prospect-header .meta { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+    .archive-btn {
+      background: none; border: 1px solid var(--border); border-radius: 2px;
+      padding: 6px 14px; font-family: 'Titillium Web', sans-serif;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); cursor: pointer; transition: border-color 0.12s, color 0.12s;
+    }
+    .archive-btn:hover { border-color: var(--terra); color: var(--terra); }
+
+    /* ── STAGE PROGRESS BAR ── */
+    .stage-progress { display: flex; gap: 0; margin-bottom: 2rem; border: 1px solid var(--border); border-radius: 3px; overflow: hidden; }
+    .stage-step {
+      flex: 1; padding: 10px 12px; font-size: 9px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase; text-align: center;
+      background: var(--surface); color: var(--muted);
+      border-right: 1px solid var(--border); transition: background 0.2s, color 0.2s;
+      cursor: default;
+    }
+    .stage-step:last-child { border-right: none; }
+    .stage-step.done { background: var(--teal-light); color: var(--teal-deep); }
+    .stage-step.active { background: var(--teal); color: var(--teal-text); }
+    .stage-step .ss-num { display: block; font-size: 16px; font-weight: 300; letter-spacing: 0; margin-bottom: 2px; }
+
+    /* ── STAGE CARDS ── */
+    .stage-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 4px; margin-bottom: 1.25rem; overflow: hidden;
+    }
+    .stage-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+      cursor: pointer; user-select: none;
+    }
+    .stage-card-header:hover { background: var(--surface); }
+    .stage-card-title { display: flex; align-items: center; gap: 10px; }
+    .stage-badge {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 2px;
+    }
+    .badge-pending  { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+    .badge-active   { background: var(--teal); color: var(--teal-text); }
+    .badge-done     { background: var(--teal-light); color: var(--teal-deep); border: 1px solid var(--teal); }
+    .badge-blocked  { background: var(--terra-light); color: var(--terra); border: 1px solid var(--terra); }
+
+    .stage-card-name { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); }
+    .stage-collapse-arrow { font-size: 11px; color: var(--muted); transition: transform 0.2s; }
+    .stage-collapse-arrow.open { transform: rotate(90deg); }
+
+    .stage-card-body { padding: 1.25rem 1.25rem; display: none; }
+    .stage-card-body.open { display: block; }
+
+    /* ── CHECKLIST ── */
+    .checklist { list-style: none; }
+    .check-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 9px 0; border-bottom: 1px solid var(--border);
+    }
+    .check-item:last-child { border-bottom: none; }
+    .check-box {
+      width: 18px; height: 18px; border-radius: 2px; flex-shrink: 0;
+      border: 1.5px solid var(--sand); background: var(--bg);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      margin-top: 1px; transition: background 0.15s, border-color 0.15s;
+    }
+    .check-box.checked { background: var(--teal); border-color: var(--teal); }
+    .check-box.checked::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 700; }
+    .check-label { flex: 1; }
+    .check-label .cl-title { font-size: 12px; font-weight: 600; color: var(--ink); }
+    .check-label .cl-title.done { color: var(--muted); text-decoration: line-through; }
+    .check-label .cl-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .check-owner { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); white-space: nowrap; padding: 2px 8px; background: var(--surface); border-radius: 10px; margin-top: 1px; }
+
+    /* ── DECISION POINTS ── */
+    .decision-block { margin: 14px 0; padding: 14px 16px; border-radius: 3px; border: 1px solid var(--border); background: var(--surface); }
+    .decision-block .db-q { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); margin-bottom: 10px; }
+    .decision-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .dec-btn {
+      padding: 7px 18px; border-radius: 2px; font-family: 'Titillium Web', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      cursor: pointer; border: 1.5px solid transparent; transition: all 0.15s;
+    }
+    .dec-yes { background: var(--teal); color: var(--teal-text); }
+    .dec-yes:hover { background: var(--teal-deep); }
+    .dec-yes.selected { background: var(--teal-deep); box-shadow: 0 0 0 2px var(--teal); }
+    .dec-no  { background: none; border-color: var(--terra); color: var(--terra); }
+    .dec-no:hover { background: var(--terra-light); }
+    .dec-no.selected { background: var(--terra-light); box-shadow: 0 0 0 2px var(--terra); }
+
+    .outcome-block { margin-top: 12px; padding: 10px 14px; border-radius: 3px; font-size: 11px; font-weight: 600; display: none; }
+    .outcome-block.show { display: block; }
+    .outcome-block.ok   { background: var(--teal-light); color: var(--teal-deep); border: 1px solid var(--teal); }
+    .outcome-block.warn { background: var(--terra-light); color: var(--terra); border: 1px solid var(--terra); }
+
+    /* ── INPUT FIELDS ── */
+    .field-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 14px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+    .field input, .field select, .field textarea {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 2px;
+      padding: 8px 10px; font-family: 'Titillium Web', sans-serif;
+      font-size: 12px; color: var(--ink); outline: none; transition: border-color 0.15s;
+    }
+    .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--teal); }
+    .field textarea { resize: vertical; min-height: 60px; }
+
+    /* ── NOTES ── */
+    .notes-section { margin-top: 14px; }
+    .notes-label { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+
+    /* ── MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; display: none; align-items: center; justify-content: center; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: var(--card); border-radius: 6px; border: 1px solid var(--border); padding: 2rem; width: 100%; max-width: 440px; }
+    .modal h3 { font-size: 14px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); margin-bottom: 1.25rem; }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
+    .modal-cancel { background: none; border: 1px solid var(--border); border-radius: 2px; padding: 8px 18px; font-family: 'Titillium Web', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+    .modal-cancel:hover { border-color: var(--muted); }
+    .modal-confirm { background: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 2px; padding: 8px 18px; font-family: 'Titillium Web', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+    .modal-confirm:hover { background: var(--btn-hover); }
+
+    /* ── DEPOSIT PILL ── */
+    .deposit-pill { display: inline-block; padding: 4px 12px; border-radius: 2px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; background: var(--teal); color: var(--teal-text); margin-top: 6px; }
+    .deposit-pill.terra { background: var(--terra); color: var(--terra-text); }
+
+    /* ── STATUS SUMMARY ── */
+    .status-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 2rem; }
+    .stat-box { background: var(--surface); border-radius: 3px; padding: 12px 14px; }
+    .stat-box .sl { font-size: 8px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .stat-box .sv { font-size: 20px; font-weight: 300; color: var(--ink); }
+    .stat-box.teal-box { background: var(--teal-light); }
+    .stat-box.teal-box .sv { color: var(--teal-deep); font-weight: 600; }
+    .stat-box.terra-box { background: var(--terra-light); }
+    .stat-box.terra-box .sv { color: var(--terra); font-weight: 600; }
+
+    @media (max-width: 700px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div>
+    <div class="topbar-brand">NO REGRETS <span>STUDIOS</span></div>
+    <div class="topbar-sub">Affiliate Pipeline · Stages 1–3</div>
+  </div>
+  <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);">Programme Lead: Paul Haig</div>
+</div>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-label">Prospects &amp; Clients</div>
+    <ul class="prospect-list" id="prospectList"></ul>
+    <button class="add-prospect-btn" onclick="openAddModal()">+ Add Prospect</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" id="mainPane">
+    <div class="main-empty">
+      <div class="icon">◎</div>
+      <p>Select a prospect or add a new one</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <h3>Add New Prospect</h3>
+    <div class="field-row">
+      <div class="field"><label>Full Name</label><input type="text" id="newName" placeholder="e.g. Sarah Johnson" /></div>
+      <div class="field"><label>Source</label>
+        <select id="newSource">
+          <option value="Cold outreach">Cold outreach</option>
+          <option value="Warm referral">Warm referral</option>
+          <option value="Inbound">Inbound</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Email / Contact</label><input type="text" id="newContact" placeholder="email or phone" /></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeAddModal()">Cancel</button>
+      <button class="modal-confirm" onclick="confirmAdd()">Add Prospect</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── DATA ─────────────────────────────────────────────────────────────
+  let prospects = [];
+  let activeId = null;
+
+  function uid() { return Date.now() + Math.random().toString(36).slice(2); }
+
+  function newProspect(name, source, contact) {
+    return {
+      id: uid(), name, source, contact,
+      stage: 1,  // 1=Recruitment, 2=Onboarding, 3=Client Intro
+      archived: false,
+      // Stage 1
+      s1_outreach_sent: false,
+      s1_response: null,       // null | 'yes' | 'no'
+      s1_app_reviewed: false,
+      s1_approved: null,       // null | 'yes' | 'no'
+      // Stage 2
+      s2_agreement_signed: false,
+      s2_portal_created: false,
+      s2_welcome_emails: false,
+      s2_bank_details: false,
+      s2_tracking_sheet: false,
+      // Stage 3
+      s3_client_name: '',
+      s3_service: 'Signature',  // Signature | Premium
+      s3_fee_collected: false,
+      s3_fee_transferred: false,
+      s3_client_passed: false,
+      s3_attended: null,        // null | 'yes' | 'no'
+      notes: '',
+    };
+  }
+
+  // ── SIDEBAR ──────────────────────────────────────────────────────────
+  function stageLabel(p) {
+    if (p.archived) return 'Archived';
+    if (p.stage === 1) return 'Stage 1 · Recruitment';
+    if (p.stage === 2) return 'Stage 2 · Onboarding';
+    return 'Stage 3 · Client Intro';
+  }
+
+  function initials(name) {
+    return name.split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
+  }
+
+  function avatarClass(p) {
+    if (p.stage === 2) return 'stage-2';
+    if (p.stage === 3) return 'stage-3';
+    return '';
+  }
+
+  function renderSidebar() {
+    const list = document.getElementById('prospectList');
+    const visible = prospects.filter(p => !p.archived);
+    if (!visible.length) {
+      list.innerHTML = '<li style="padding:12px 1.25rem;font-size:11px;color:var(--muted);">No prospects yet.</li>';
+      return;
+    }
+    list.innerHTML = visible.map(p => `
+      <li class="prospect-item ${p.id === activeId ? 'active' : ''}" onclick="selectProspect('${p.id}')">
+        <div class="p-avatar ${avatarClass(p)}">${initials(p.name)}</div>
+        <div class="p-meta">
+          <div class="p-name">${p.name}</div>
+          <div class="p-stage-tag">${stageLabel(p)}</div>
+        </div>
+      </li>`).join('');
+  }
+
+  // ── SELECT ────────────────────────────────────────────────────────────
+  function selectProspect(id) {
+    activeId = id;
+    renderSidebar();
+    renderMain();
+  }
+
+  // ── MAIN PANE ─────────────────────────────────────────────────────────
+  function renderMain() {
+    const pane = document.getElementById('mainPane');
+    const p = prospects.find(x => x.id === activeId);
+    if (!p) { pane.innerHTML = '<div class="main-empty"><div class="icon">◎</div><p>Select a prospect or add a new one</p></div>'; return; }
+
+    // progress
+    const stages = ['Recruitment', 'Onboarding', 'Client Intro'];
+    const progressHTML = stages.map((s, i) => {
+      const n = i + 1;
+      let cls = n < p.stage ? 'done' : n === p.stage ? 'active' : '';
+      return `<div class="stage-step ${cls}"><span class="ss-num">${n < p.stage ? '✓' : n}</span>${s}</div>`;
+    }).join('');
+
+    // stats
+    const totalFees = p.s3_fee_collected ? (p.s3_service === 'Signature' ? 500 : 300) : 0;
+
+    pane.innerHTML = `
+      <div class="prospect-header">
+        <div>
+          <h2>${p.name}</h2>
+          <div class="meta">${p.source} · ${p.contact || 'No contact'}</div>
+        </div>
+        <button class="archive-btn" onclick="archiveProspect('${p.id}')">Archive</button>
+      </div>
+
+      <div class="stage-progress">${progressHTML}</div>
+
+      <div class="status-row">
+        <div class="stat-box"><div class="sl">Current Stage</div><div class="sv">Stage ${p.stage}</div></div>
+        <div class="stat-box teal-box"><div class="sl">Fee Collected</div><div class="sv">${totalFees ? '$' + totalFees.toLocaleString() : '—'}</div></div>
+        <div class="stat-box terra-box"><div class="sl">Service Type</div><div class="sv">${p.stage >= 3 ? p.s3_service : '—'}</div></div>
+      </div>
+
+      ${renderStage1(p)}
+      ${p.stage >= 2 ? renderStage2(p) : ''}
+      ${p.stage >= 3 ? renderStage3(p) : ''}
+
+      <div class="stage-card">
+        <div class="stage-card-header" onclick="toggleCard('notes-body','notes-arrow')">
+          <div class="stage-card-title">
+            <div class="stage-card-name">Notes</div>
+          </div>
+          <span class="stage-collapse-arrow open" id="notes-arrow">▶</span>
+        </div>
+        <div class="stage-card-body open" id="notes-body">
+          <div class="field">
+            <textarea placeholder="Add notes about this prospect..." oninput="saveNote('${p.id}', this.value)">${p.notes}</textarea>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderStage1(p) {
+    const isActive = p.stage === 1;
+    const isDone = p.stage > 1;
+    const badge = isDone ? 'badge-done' : isActive ? 'badge-active' : 'badge-pending';
+    const status = isDone ? 'Complete' : isActive ? 'In Progress' : 'Pending';
+    const bodyOpen = isActive || isDone ? 'open' : '';
+
+    return `
+    <div class="stage-card">
+      <div class="stage-card-header" onclick="toggleCard('s1-body','s1-arrow')">
+        <div class="stage-card-title">
+          <span class="stage-badge ${badge}">${status}</span>
+          <div class="stage-card-name">Stage 1 — Recruitment</div>
+        </div>
+        <span class="stage-collapse-arrow ${bodyOpen ? 'open' : ''}" id="s1-arrow">▶</span>
+      </div>
+      <div class="stage-card-body ${bodyOpen}" id="s1-body">
+
+        <ul class="checklist">
+          <li class="check-item">
+            <div class="check-box ${p.s1_outreach_sent ? 'checked' : ''}" onclick="toggle('${p.id}','s1_outreach_sent')"></div>
+            <div class="check-label">
+              <div class="cl-title ${p.s1_outreach_sent ? 'done' : ''}">Send outreach email</div>
+              <div class="cl-sub">Cold or warm prospect</div>
+            </div>
+            <div class="check-owner">Katy Nunez</div>
+          </li>
+        </ul>
+
+        <div class="decision-block">
+          <div class="db-q">Response received?</div>
+          <div class="decision-btns">
+            <button class="dec-btn dec-yes ${p.s1_response==='yes'?'selected':''}" onclick="decide('${p.id}','s1_response','yes')">Yes — Proceed</button>
+            <button class="dec-btn dec-no  ${p.s1_response==='no' ?'selected':''}" onclick="decide('${p.id}','s1_response','no')">No — Archive Lead</button>
+          </div>
+          <div class="outcome-block ok  ${p.s1_response==='yes'?'show':''}">✓ Response received — move to application review.</div>
+          <div class="outcome-block warn ${p.s1_response==='no' ?'show':''}">✗ No response — lead archived. No further action required.</div>
+        </div>
+
+        ${p.s1_response === 'yes' ? `
+        <ul class="checklist">
+          <li class="check-item">
+            <div class="check-box ${p.s1_app_reviewed ? 'checked' : ''}" onclick="toggle('${p.id}','s1_app_reviewed')"></div>
+            <div class="check-label">
+              <div class="cl-title ${p.s1_app_reviewed ? 'done' : ''}">Review application</div>
+              <div class="cl-sub">Within 3 business days</div>
+            </div>
+            <div class="check-owner">Katy Nunez</div>
+          </li>
+        </ul>
+
+        <div class="decision-block">
+          <div class="db-q">Application approved?</div>
+          <div class="decision-btns">
+            <button class="dec-btn dec-yes ${p.s1_approved==='yes'?'selected':''}" onclick="approveApplication('${p.id}','yes')">Yes — Approve</button>
+            <button class="dec-btn dec-no  ${p.s1_approved==='no' ?'selected':''}" onclick="approveApplication('${p.id}','no')">No — Decline &amp; Notify</button>
+          </div>
+          <div class="outcome-block ok   ${p.s1_approved==='yes'?'show':''}">✓ Application approved — move to Stage 2 Onboarding.</div>
+          <div class="outcome-block warn ${p.s1_approved==='no' ?'show':''}">✗ Application declined — prospect notified. Process ends here.</div>
+        </div>
+        ` : ''}
+
+      </div>
+    </div>`;
+  }
+
+  function renderStage2(p) {
+    const isActive = p.stage === 2;
+    const isDone = p.stage > 2;
+    const badge = isDone ? 'badge-done' : isActive ? 'badge-active' : 'badge-pending';
+    const status = isDone ? 'Complete' : isActive ? 'In Progress' : 'Pending';
+
+    const checks = [
+      { key: 's2_agreement_signed', label: 'Sign affiliate agreement',  sub: 'Level 2 or Level 3',           owner: '' },
+      { key: 's2_portal_created',   label: 'Create portal account',     sub: '',                             owner: '' },
+      { key: 's2_welcome_emails',   label: 'Send Welcome Emails 1, 2 & 3', sub: '',                          owner: '' },
+      { key: 's2_bank_details',     label: 'Collect link / bank details / W-9', sub: '',                     owner: '' },
+      { key: 's2_tracking_sheet',   label: 'Set up tracking sheet',     sub: '',                             owner: 'Tasneem Azor' },
+    ];
+
+    const allDone = checks.every(c => p[c.key]);
+
+    return `
+    <div class="stage-card">
+      <div class="stage-card-header" onclick="toggleCard('s2-body','s2-arrow')">
+        <div class="stage-card-title">
+          <span class="stage-badge ${badge}">${status}</span>
+          <div class="stage-card-name">Stage 2 — Onboarding</div>
+        </div>
+        <span class="stage-collapse-arrow open" id="s2-arrow">▶</span>
+      </div>
+      <div class="stage-card-body open" id="s2-body">
+        <ul class="checklist">
+          ${checks.map(c => `
+          <li class="check-item">
+            <div class="check-box ${p[c.key] ? 'checked' : ''}" onclick="toggle('${p.id}','${c.key}')"></div>
+            <div class="check-label">
+              <div class="cl-title ${p[c.key] ? 'done' : ''}">${c.label}</div>
+              ${c.sub ? `<div class="cl-sub">${c.sub}</div>` : ''}
+            </div>
+            ${c.owner ? `<div class="check-owner">${c.owner}</div>` : ''}
+          </li>`).join('')}
+        </ul>
+        ${allDone && p.stage === 2 ? `
+        <div style="margin-top:12px;">
+          <button class="dec-btn dec-yes" onclick="advanceToStage3('${p.id}')">✓ Onboarding Complete — Move to Stage 3</button>
+        </div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  function renderStage3(p) {
+    const isActive = p.stage === 3;
+    const badge = isActive ? 'badge-active' : 'badge-done';
+    const status = isActive ? 'In Progress' : 'Complete';
+
+    return `
+    <div class="stage-card">
+      <div class="stage-card-header" onclick="toggleCard('s3-body','s3-arrow')">
+        <div class="stage-card-title">
+          <span class="stage-badge ${badge}">${status}</span>
+          <div class="stage-card-name">Stage 3 — Client Introduction</div>
+        </div>
+        <span class="stage-collapse-arrow open" id="s3-arrow">▶</span>
+      </div>
+      <div class="stage-card-body open" id="s3-body">
+
+        <div class="field-row">
+          <div class="field">
+            <label>Client Name</label>
+            <input type="text" value="${p.s3_client_name}" placeholder="Client full name" oninput="updateField('${p.id}','s3_client_name',this.value)" />
+          </div>
+          <div class="field">
+            <label>Service Type</label>
+            <select onchange="updateField('${p.id}','s3_service',this.value)">
+              <option value="Signature" ${p.s3_service==='Signature'?'selected':''}>Signature ($6,000)</option>
+              <option value="Premium"   ${p.s3_service==='Premium'  ?'selected':''}>Premium ($2,000)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <span class="deposit-pill ${p.s3_service==='Premium'?'terra':''}">
+            ${p.s3_service === 'Signature' ? 'Deposit: $500' : 'Deposit: $300'}
+          </span>
+        </div>
+
+        <ul class="checklist">
+          <li class="check-item">
+            <div class="check-box ${p.s3_fee_collected?'checked':''}" onclick="toggle('${p.id}','s3_fee_collected')"></div>
+            <div class="check-label">
+              <div class="cl-title ${p.s3_fee_collected?'done':''}">Identify &amp; qualify client</div>
+              <div class="cl-sub">Confirm genuine interest and readiness to proceed</div>
+            </div>
+          </li>
+          <li class="check-item">
+            <div class="check-box ${p.s3_fee_collected?'checked':''}" onclick="toggle('${p.id}','s3_fee_collected')"></div>
+            <div class="check-label">
+              <div class="cl-title ${p.s3_fee_collected?'done':''}">Collect Art Director fee</div>
+              <div class="cl-sub">${p.s3_service === 'Signature' ? 'Signature $500' : 'Premium $300'} via approved payment link</div>
+            </div>
+          </li>
+          <li class="check-item">
+            <div class="check-box ${p.s3_fee_transferred?'checked':''}" onclick="toggle('${p.id}','s3_fee_transferred')"></div>
+            <div class="check-label">
+              <div class="cl-title ${p.s3_fee_transferred?'done':''}">Transfer fee to NR Studios</div>
+              <div class="cl-sub">Immediately upon receipt — do not hold funds</div>
+            </div>
+          </li>
+          <li class="check-item">
+            <div class="check-box ${p.s3_client_passed?'checked':''}" onclick="toggle('${p.id}','s3_client_passed')"></div>
+            <div class="check-label">
+              <div class="cl-title ${p.s3_client_passed?'done':''}">Pass client details to NR Studios</div>
+              <div class="cl-sub">Within 24 hours of collecting deposit</div>
+            </div>
+          </li>
+        </ul>
+
+        <div class="decision-block">
+          <div class="db-q">Client attends session?</div>
+          <div class="decision-btns">
+            <button class="dec-btn dec-yes ${p.s3_attended==='yes'?'selected':''}" onclick="decide('${p.id}','s3_attended','yes')">Yes — Attended</button>
+            <button class="dec-btn dec-no  ${p.s3_attended==='no' ?'selected':''}" onclick="decide('${p.id}','s3_attended','no')">No — No-Show</button>
+          </div>
+          <div class="outcome-block ok   ${p.s3_attended==='yes'?'show':''}">✓ Client attended — proceed to Stage 4 Sign-Up &amp; Commission.</div>
+          <div class="outcome-block warn ${p.s3_attended==='no' ?'show':''}">✗ No-show — $100 no-show fee retained. No further commission on this client unless they rebook.</div>
+        </div>
+
+      </div>
+    </div>`;
+  }
+
+  // ── ACTIONS ──────────────────────────────────────────────────────────
+  function toggle(id, key) {
+    const p = prospects.find(x => x.id === id);
+    if (p) { p[key] = !p[key]; renderMain(); renderSidebar(); }
+  }
+
+  function updateField(id, key, val) {
+    const p = prospects.find(x => x.id === id);
+    if (p) { p[key] = val; renderSidebar(); }
+  }
+
+  function decide(id, key, val) {
+    const p = prospects.find(x => x.id === id);
+    if (p) { p[key] = val; renderMain(); }
+  }
+
+  function approveApplication(id, val) {
+    const p = prospects.find(x => x.id === id);
+    if (!p) return;
+    p.s1_approved = val;
+    if (val === 'yes') { p.stage = 2; }
+    renderMain(); renderSidebar();
+  }
+
+  function advanceToStage3(id) {
+    const p = prospects.find(x => x.id === id);
+    if (p) { p.stage = 3; renderMain(); renderSidebar(); }
+  }
+
+  function archiveProspect(id) {
+    const p = prospects.find(x => x.id === id);
+    if (p) { p.archived = true; activeId = null; renderSidebar(); renderMain(); }
+  }
+
+  function saveNote(id, val) {
+    const p = prospects.find(x => x.id === id);
+    if (p) p.notes = val;
+  }
+
+  function toggleCard(bodyId, arrowId) {
+    const body  = document.getElementById(bodyId);
+    const arrow = document.getElementById(arrowId);
+    if (!body || !arrow) return;
+    body.classList.toggle('open');
+    arrow.classList.toggle('open');
+  }
+
+  // ── MODAL ────────────────────────────────────────────────────────────
+  function openAddModal() {
+    document.getElementById('newName').value = '';
+    document.getElementById('newContact').value = '';
+    document.getElementById('addModal').classList.add('show');
+    setTimeout(() => document.getElementById('newName').focus(), 50);
+  }
+
+  function closeAddModal() { document.getElementById('addModal').classList.remove('show'); }
+
+  function confirmAdd() {
+    const name = document.getElementById('newName').value.trim();
+    if (!name) { document.getElementById('newName').focus(); return; }
+    const source  = document.getElementById('newSource').value;
+    const contact = document.getElementById('newContact').value.trim();
+    const p = newProspect(name, source, contact);
+    prospects.push(p);
+    activeId = p.id;
+    closeAddModal();
+    renderSidebar();
+    renderMain();
+  }
+
+  document.getElementById('newName').addEventListener('keydown', e => { if (e.key === 'Enter') confirmAdd(); });
+  document.getElementById('addModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeAddModal(); });
+
+  // ── SEED DATA ────────────────────────────────────────────────────────
+  const seed = newProspect('John Doe', 'Warm referral', 'john@example.com');
+  seed.s1_outreach_sent = true;
+  seed.s1_response = 'yes';
+  seed.s1_app_reviewed = true;
+  seed.s1_approved = 'yes';
+  seed.stage = 2;
+  prospects.push(seed);
+  renderSidebar();
+</script>
+</body>
+</html>
